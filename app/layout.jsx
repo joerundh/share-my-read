@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,9 +25,18 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ClerkProvider>
-          <header className={"flex flex-row justify-between"}>
-            <button>d</button>
-            <button>e</button>
+          <header className={"flex flex-row justify-between align-center"}>
+            <nav>
+              <Link href={"/"}>Home</Link>
+            </nav>
+            <div>
+              <SignedOut>
+                no
+              </SignedOut>
+              <SignedIn>
+                yes
+              </SignedIn>
+            </div>
           </header>
           <main>
             {children}
