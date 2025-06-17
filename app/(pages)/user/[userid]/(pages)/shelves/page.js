@@ -1,5 +1,7 @@
 export default function Page() {
-    <>
-        <h2>User-made bookshelves</h2>
-    </>
+    return (
+        <>
+            <h2>User-made bookshelves</h2>
+        </>
+    )
 }
