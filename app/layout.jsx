@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 const geistSans = Geist({
@@ -22,20 +21,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ClerkProvider>
           <header className={"bg-[rgba(0, 0, 0, 0.7)]"}>
             <nav className={"p-2 text-sm bg-white w-full flex flex-row justify-between align-center"}>
               <div>
                 <Link href={"/"}>Home</Link>
               </div>
               <div className={"flex flex-row gap-5"}>
-                <SignedOut>
-                  <SignInButton oauthFlow="popup" />
-                  <SignUpButton oauthFlow="popup" />
-                </SignedOut>
-                <SignedIn>
-                  <UserButton></UserButton>
-                </SignedIn>
               </div>
             </nav>
           </header>
@@ -46,9 +37,7 @@ export default function RootLayout({ children }) {
             {children}
           </main>
           <footer>
-            
           </footer>
-        </ClerkProvider>
       </body>
     </html>
   );
