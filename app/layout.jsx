@@ -1,9 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
-import Link from "next/link";
 import LoginBar from "./ui/LoginBar";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import NavBar from "./ui/NavBar";
 
 const geistSans = Geist({
