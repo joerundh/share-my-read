@@ -7,7 +7,7 @@ export default function Page({ params }) {
     /*
     Get user profile from Clerk
     */
-    const { userSignedIn: isSignedIn, user, userLoading: isLoading } = useUser();
+    const { userSignedIn: isSignedIn, userId, userLoading: isLoading } = useUser();
 
     /*
     If the user is not signed in, the user may not view the user profile
@@ -38,11 +38,17 @@ export default function Page({ params }) {
         queryClient.prefetchQuery({
             queryKey: [ "profile", viewingId ],
             queryFn: async () => {
-                const request = `*[ _type == "profile" && userId = ${viewingId} ]`;
-                const res = await fetch(`https://0247inu2.api.sanity.io/v2025-06-17/data/query/production?query=${encodeURI(request)}`);
+                const request = {
+                    header: {
+                        method: "GET",
+                    }
+                }
+
+                const res = await fetch("");
                 if (!res.ok) {
                     throw new Error("Could not get user profile");
                 }
+
                 return await res.json();
             },
             enabled: !!viewingId

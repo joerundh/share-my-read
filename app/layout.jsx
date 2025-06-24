@@ -1,8 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
-import LoginBar from "./ui/LoginBar";
-import NavBar from "./ui/NavBar";
+import LoginBar from "@/app/components/ui/LoginBar";
+import NavBar from "@/app/components/ui/NavBar";
+import QueryProvider from "./components/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,21 +25,23 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ClerkProvider>
-          <header className={"bg-[rgba(0, 0, 0, 0.7)]"}>
-            <nav className={"p-2 text-sm bg-white w-full flex flex-row justify-between align-center"}>
-              <NavBar />
-              <LoginBar />
-            </nav>
-          </header>
-          <div className={"w-full h-50 bg-[rgba(0,0,0,0.4)]"}>
-            <h1>share my read</h1>
-          </div>
-          <main className={"p-3 bg-white"}>
-            {children}
-          </main>
-          <footer>
-            
-          </footer>
+          <QueryProvider>
+            <header className={"bg-[rgba(0, 0, 0, 0.7)]"}>
+              <nav className={"p-2 text-sm bg-white w-full flex flex-row justify-between align-center"}>
+                <NavBar />
+                <LoginBar />
+              </nav>
+            </header>
+            <div className={"w-full h-50 bg-[rgba(0,0,0,0.4)]"}>
+              <h1>share my read</h1>
+            </div>
+            <main className={"p-5 bg-white"}>
+              {children}
+            </main>
+            <footer>
+              
+            </footer>
+          </QueryProvider>
         </ClerkProvider>
       </body>
     </html>
