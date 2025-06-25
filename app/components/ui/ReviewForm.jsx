@@ -19,7 +19,7 @@ export default function ReviewForm() {
 
     return (
         <div className={"w-full flex flex-col justify-center gap-3"}>
-            <h3 className={"font-bold"}>Add a review:</h3>
+            <h3 className={"font-bold"}>Add a review of this book:</h3>
             <div className={"flex flex-row justify-between items-center"}>
                 <div className={"flex flex-row gap-2 justify-between items-center"}>
                     <input className={"w-[400px] border-[1px] border-zinc-500 rounded-xs p-1"} type="text" placeholder="Header..." maxLength={80} value={header} onChange={e => setHeader(e.target.value)} />
@@ -32,8 +32,8 @@ export default function ReviewForm() {
                 <p className={"w-full text-right color-grey-500"}>{body.length}/600</p>
             </div>
             <div className={"flex flex-row justify-center items-center gap-2"}>
-                <button className={"w-[150px] p-2 bg-gray-200 rounded-xs"} onClick={submitReview}>Submit</button>
-                <button className={"w-[150px] p-2 bg-gray-200 rounded-xs"} onClick={clearForm}>Clear</button>
+                <button className={"w-[150px] p-2 bg-gray-200 rounded-xs"} onClick={submitReview}>Submit review</button>
+                <button className={"w-[150px] p-2 bg-gray-200 rounded-xs"} onClick={clearForm}>Clear form</button>
             </div>
         </div>
     )
