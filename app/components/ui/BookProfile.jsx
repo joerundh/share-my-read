@@ -4,14 +4,11 @@ import CoverPhoto from "@/app/components/ui/CoverPhoto";
 import InlineList from "@/app/components/ui/InlineList";
 import ReviewForm from "./ReviewForm";
 import { useUser } from "@clerk/nextjs";
+import { useQuery } from "@tanstack/react-query";
+import ReviewsPanel from "./ReviewsPanel";
 
 export default function BookProfile({ bookObject }) {
     const { user, isSignedIn, isLoaded } = useUser();
-
-    const { data: reviews, isLoading: reviewsLoading, error } = useQuery({
-        queryKey: [],
-        queryFn: () => {}
-    })
 
     return (
         <div className={"flex flex-col justify-start align-center gap-5"}>
@@ -43,7 +40,7 @@ export default function BookProfile({ bookObject }) {
                     )
                 }
             </div>
-            <ReviewForm />
+            <ReviewsPanel bookId={bookObject.id} />
         </div>
     )
 }

@@ -1,25 +1,7 @@
+import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import Image from "next/image"
 import RatingBar from "./RatingBar";
-import { useEffect } from "react";
-
-function Rating({ stars }) {
-    return (
-        <div className={""}>
-            <div className={""}>
-            {
-                new Array(5).fill(0)
-                        .map((x, index) => index + 1)
-                        .map(x => (
-                                <Image key={x} src={
-                                    x <= stars ? "" : ""
-                                } className={"w-[20px] h-[20px]"} />
-                        ))
-            }
-            </div>  
-        </div>
-    );
-}
+import Rating from "./Rating";
 
 export default function Review({ review }) {
     const { userId: clientId } = useUser();
@@ -61,7 +43,7 @@ export default function Review({ review }) {
         setEditingBody(false);
     }
 
-    const cancenRating = () => {
+    const cancelRating = () => {
         setEditedRating(rating);
         setEditedRating(false);
     }
@@ -136,11 +118,6 @@ export default function Review({ review }) {
                         ]
                     }
                 </div>
-            </div>
-            <div className={""}>
-                {
-                    // Likes
-                }
             </div>
         </div>
     )

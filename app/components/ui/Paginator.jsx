@@ -1,8 +1,32 @@
 export default function Paginator({ pageValue, pageSetter, perPageValue, pageCount }) {
+    const firstPage = () => {
+        if (pageValue > 0) {
+            pageSetter(0);
+        }
+    }
+
+    const prevPage = () => {
+        if (pageValue > 0) {
+            pageSetter(pageValue - 1);
+        }
+    }
+
+    const nextPage = () => {
+        if (pageValue < pageCount - 1) {
+            pageSetter(pageValue + 1);
+        }
+    }
+
+    const lastPage = () => {
+        if (pageValue < pageCount - 1) {
+            pageSetter(pageCount - 1);
+        }
+    }
+
     return (
-        <div className={""}>
-            <Link className={"hover:underline"} onClick={() => {}}>First</Link>
-            <Link className={"hover:underline"} onClick={() => {}}>Prev</Link>
+        <div className={"flex flex-row justify-center gap-3"}>
+            <Link className={"hover:underline"} onClick={() => firstPage()}>First</Link>
+            <Link className={"hover:underline"} onClick={() => prevPage()}>Prev</Link>
             {
                 pageValue - 2 < 0 ? <span>...</span> : <></>
             }
@@ -20,8 +44,8 @@ export default function Paginator({ pageValue, pageSetter, perPageValue, pageCou
             {
                 pageValue + 2 < pageCount ? <span>...</span> : <></>
             }
-            <Link className={"hover:underline"} onClick={() => {}}>Next</Link>
-            <Link className={"hover:underline"} onClick={() => {}}>Last</Link>
+            <Link className={"hover:underline"} onClick={() => nextPage()}>Next</Link>
+            <Link className={"hover:underline"} onClick={() => lastPage()}>Last</Link>
         </div>
     )
 }

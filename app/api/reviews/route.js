@@ -1,3 +1,4 @@
+import { client } from "@/app/lib/sanity";
 import { auth } from "@clerk/nextjs/dist/types/server";
 
 async function clientIsAuthorized(userId, adminAuthorized=false) {
@@ -13,6 +14,11 @@ async function clientIsAuthorized(userId, adminAuthorized=false) {
     return false;
 }
 
+async function clientIsLoggedIn() {
+    const { userId } = await auth();
+    return !!userId;
+}
+
 /*==========================================================================
 ------------------------------------POST------------------------------------
 ==========================================================================*/
@@ -21,7 +27,9 @@ export async function POST(request) {
     /*
     Invoked when a user posts a review of a book.
     */
-    const { userId: clientId } = await auth();
+    if (!clientIsLoggedIn()) {
+        return Response.json({ message: "Access denied." }, { status: 401 })
+    }
 
     const req = await request.body;
     if (!req.userId) {
@@ -100,65 +108,79 @@ export async function POST(request) {
 export async function GET(request) {
     /*
     Fetches either all the reviews written by a user identified by their user ID,
-    or all the reviews of a book identified by the book ID
+    or all the reviews of a book identified by the book ID, or checks whether or not
+    a user has written a review of a book
     */
+
+    // Check if a user is logged in, and return 401 if not
+    if (!clientIsLoggedIn()) {
+        return Response.json({ message: "Access denied." }, { status: 401 });
+    }
 
     const req = await request.body;
-    
-    if (!req.userId && !req.bookId) {
-        return Response.json({ message: "A reference is required." }, { status: 400 });
-    }
-    if (!(await clientIsAuthorized(req.userId, adminAuthorized=true))) {
-        return Response.json({ message: "Not authorized to perform the requested action." }, { status: 401 })
+
+    const sortString = n => {
+        if (n === 1) {
+            return "rating desc";
+        } else if (n === 2) {
+            return "rating asc";
+        }
+        return "_createdAt";
     }
 
-    /*
-    To come this far, the user needs to either be the same as the author of
-    the review, or an administrator (as well as logged in, obviously).
-    */
+    const offset = req.offset || 0;
+    const limit = req.offset || 10;
+    const sortBy = sortString(req.sortString);
+    
+    let query;
+    if (req.userId) { 
+        if (req.bookId) {
+            // Check for a single review by a given user about a given book
+            query = `*[_type == "review" && userId == "${req.userId}" && bookId == "${req.bookId}"] {
+                _id,
+                bookId,
+                userId
+            }`;
+        } else {
+            // Get all reviews written by a given user
+            query = `*[_type == "review" && userId == "${req.userId}"] | order(${sortBy}) {
+                _id,
+                _createdAt,
+                bookId,
+                userId,
+                header,
+                body,
+                rating
+            }[${offset}...${offset + limit}]`;
+        }
+    } else {
+        if (req.bookId) {
+            // Get all reviews of a given book
+            query = `*[_type == "review" && userId == "${req.userId}"] | order(${sortBy}) {
+                _id,
+                _createdAt,
+                bookId,
+                userId,
+                header,
+                body,
+                rating
+            }[${offset}...${offset + limit}]`;
+        } else {
+            // No reference of any kind is given, return 400
+            return Response.json({ message: "Missing reference." }, { status: 400 })
+        }
+    }
 
     try {
-        const dataset = "production";
-        const apiUrl = `https://${process.env.SANITY_PROJECT_ID}.api.sanity.io/${process.env.SANITY_API_VERSION}/data/query/${dataset}`;
-        const query = {
-            mutations: [
-                {
-                    query: `*[_type == "review" && ${req.userId ? 'userId == "' + req.userId + '"' : 'bookId == "' + req.bookId + '"'}]`
-                }
-            ]
-        }
-        const httpRequest = {
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.SANITY_API_TOKEN}`
-            },
-            body: JSON.stringify(query)
-        }
-
-        const res = await fetch(apiUrl, httpRequest);
-        if (!res.ok()) {
-            return Response.json({ message: "The action could not be performed." }, { status: 502 })
-        }
-        const obj = await res.json();
-
-        const result = obj.results[0];
-        if (result.operation === "delete" && result.documentId === reviewId) {
-            /*
-            The review was successfully deleted, return 200
-            */
-            return Response.json({ message: "Action completed." });
-        } else {
-            /*
-            Something went wrong in the other end, return 502
-            */
-            return Response.json({ message: "The action could not be performed." }, { status: 502 });
-        }
+        const data = await client.fetch(query, {
+            cache: "no-store"
+        });
+        return Response.json({
+            results: data
+        });
     }
-    catch(e) {
-        /*
-        Some error occurred, return 500
-        */
-        return Response.json({ message: e.toString() }, { status: 500 });
+    catch (e) {
+        return Response.json({ message: "Could not fetch data" }, { status: 502 })
     }
 }
 
