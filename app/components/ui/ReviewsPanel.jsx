@@ -1,105 +1,147 @@
 import ReviewForm from "./ReviewForm";
 import Review from "./Review";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import LoadingIcon from "./LoadingIcon";
-
-async function fetchSingleReview(userId, bookId) {
-    const res = await fetch("/api/reviews", {
-        method: "POST",
-        body: JSON.stringify({
-            userId: userId,
-            bookId: bookId
-        })
-    });
-    if (!res.ok) {
-        return {};
-    }
-    const obj = await res.json();
-    return obj.results[0] || null;
-}
+import Paginator from "./Paginator";
+import PaginationSettings from "./PaginationSettings";
 
 export default function ReviewsPanel({ bookId }) {
-    const { userId: clientId } = useUser();
+    // User
+    const { isLoaded, isSignedIn, user, error: userError } = useUser();
 
-    const [ reviews, setReviews ] = useState([]);
+    // State variables
     const [ page, setPage ] = useState(0);
     const [ perPage, setPerPage ] = useState(5);
-
-    const pageCount = Math.ceil(reviews.length/perPage);
+    const [ sorting, setSorting ] = useState(0);
 
     useEffect(() => {
         setPage(0);
-    }, [ perPage ]);
+    }, [ perPage, sorting ]);
 
-    const { data: showForm, isLoading: clientReviewLoading } = useQuery({
-        queryKey: [ "client-has-review", clientId, bookId ],
-        queryFn: () => fetchSingleReview(clientId, bookId)
+    // Check whether the client user has written a review
+
+    const { data: found, isLoading: searchLoading, error: searchError } = useQuery({
+        queryKey: [ "book-reviews", "check", bookId ],
+        queryFn: async () => {
+            const searchParams = new URLSearchParams([
+                [ "clientId", clientId ],
+                [ "bookId", bookId ],                
+                [ "userId", clientId ]
+            ])
+            const res = await fetch(`/api/reviews/book/user?${searchParams.toString()}`);
+            if (!res.ok) {
+                throw new Error("Could not fetch data.")
+            }
+            const obj = await res.json();
+            return obj.result;
+        },
+        enabled: isSignedIn
     });
 
-    const { data, isLoading, error } = useQuery({
-        queryKey: [],
+    // Number of reviews
+
+    const { data: count, countLoading, countError } = useQuery({
+        queryKey: [ "book-review", "count", bookId ],
         queryFn: async () => {
-            const res = await fetch("/api/reviews", {
-                method: "GET",
-                body: JSON.stringify({
-                    bookId: bookId,
-                    offset: page*perPage,
-                    limit: perPage
-                })
-            })
-        }
+            const searchParams = new URLSearchParams([
+                [ "clientId", clientId ],
+                [ "bookId", bookId ]
+            ]);
+
+            const res = await fetch(`/api/reviews/count/book?${searchParams.toString()}`);
+            if (!res.ok) {
+                throw new Error("Could not fetch data.")
+            }
+            const obj = await res.json();
+            return obj.count;
+        },
+        enabled: isSignedIn
     })
+
+    // Fetch paginated reviews
+
+    const { data, isLoading, error } = useQuery({
+        queryKey: [ "book-reviews", bookId, page, perPage, sorting ],
+        queryFn: async () => {
+            const searchParams = new URLSearchParams([
+                [ "clientId", clientId ],
+                [ "bookId", bookId ],
+                [ "offset", page*perPage ],
+                [ "limit", perPage ],
+                [ "sorting", sorting ]
+            ])
+            const res = await fetch(`/api/reviews/book?${searchParams.toString()}`)
+            if (!res.ok) {
+                throw new Error(res.message);
+            }
+            const obj = await res.json();
+            return obj.results;
+        },
+        enabled: isSignedIn
+    })
+
+    if (!isLoaded) {
+        return (
+            <LoadingIcon message={"Loading..."} />
+        )
+    }
+
+    if (!isSignedIn) {
+        return (
+            <p className={"w-full text-center"}>Log in to read reviews.</p>
+        )
+    }
+    
+    const clientId = user.id;
+
+    const reviewForm = () => {
+        if (searchLoading) {
+            return <Fragment key={0} />
+        }
+        if (searchError) {
+            return <Fragment key={0} />
+        }
+        if (found) {
+            return <Fragment key={0} />
+        }
+        return <ReviewForm key={0} />
+    }
+
+    const reviews = () => {
+        if (countLoading || isLoading) {
+            return <LoadingIcon key={1} message={"Loading reviews..."} />
+        }
+        if (countError || error) {
+            return <p key={1} className={"w-full text-center"}>An error occurred, try again later.</p>
+        }
+        return (
+            <Fragment key={1}>
+                <PaginationSettings perPageValue={perPage} perPageSetter={setPerPage} sortingValue={sorting} sortingSetter={setSorting} />
+                {
+                    data?.length ? 
+                        data.map((review, index) => (
+                            <Review key={index} review={review} />
+                        ))
+                    : (
+                        <p className={"w-full text-center"}>No reviews.</p>
+                    )
+                }
+                <Paginator pageValue={page} pageSetter={setPage} perPageValue={perPage} pageCount={count} />
+            </Fragment>
+        );
+    }
 
     return (
         <div className={"flex flex-col justify-between gap-3"}>
-            <h3>Reviews</h3>
+            <h3 className={"text-lg font-bold"}>Reviews</h3>
             {
-                !clientReviewLoading && !!showForm ? (
-                    <ReviewForm></ReviewForm>
-                ) : (<></>)
+                [
+                    reviewForm(),
+                    reviews()
+                ]
             }
-            <div className={"flex flex-col justify-start gap-2"}>
-                {
-                    isLoading ? (
-                        <div className={"flex flex-row justify-center items-center gap-3"}>
-                            <LoadingIcon width={20} />
-                        </div>
-                    ) : (
-                        <>
-                            <div className={"flex flex-row justify-between items-center"}>
-                                <label className={"flex flex-row items-center gap-2"}>
-                                    <span>Results per page:</span>
-                                    <select value={perPage} onChange={e => setPerPage(e.target.value)}>
-                                        <option value={1}>1</option>
-                                        <option value={5}>5</option>
-                                        <option value={10}>10</option>
-                                    </select>
-                                </label>
-                                <label className={"flex flex-row items-center gap-2"}>
-                                    <span>Sort by:</span>
-                                    <select>
-                                        <option value={0}>Date added</option>
-                                        <option value={1}>Rating, descending</option>
-                                        <option value={2}>Rating, ascending</option>
-                                    </select>
-                                </label>
-                            </div>
-                            <Paginator pageValue={page} pageSetter={setPage} perPageValue={perPage} />
-                            {
-                                isLoading ? (
-                                    <LoadingIcon message={"Loading reviews..."} />
-                                ) : 
-                                    reviews.map((review, index) => (
-                                        <Review review={review} />
-                                    ))
-                            }
-                            <Paginator pageValue={page} pageSetter={setPage} perPageValue={perPage} pageCount={pageCount} />
-                        </>
-                    )
-                }
-            </div>
         </div>
-    )
+    );
 }

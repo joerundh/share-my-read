@@ -24,28 +24,28 @@ export default function Paginator({ pageValue, pageSetter, perPageValue, pageCou
     }
 
     return (
-        <div className={"flex flex-row justify-center gap-3"}>
-            <Link className={"hover:underline"} onClick={() => firstPage()}>First</Link>
-            <Link className={"hover:underline"} onClick={() => prevPage()}>Prev</Link>
+        <div className={"flex flex-row justify-center items-center gap-3"}>
+            <button className={"cursor-pointer p-2 hover:underline"} onClick={() => firstPage()}>First</button>
+            <button className={"cursor-pointer p-2 hover:underline"} onClick={() => prevPage()}>Prev</button>
             {
-                pageValue - 2 < 0 ? <span>...</span> : <></>
+                pageValue - 2 > 0 ? <span>...</span> : <></>
             }
             {
                 [ pageValue - 2, pageValue - 1].filter(x => x >= 0).map(x => (
-                    <Link key={x} className={"hover:underline"} onClick={() => {}}>{x + 1}</Link>
+                    <button key={x} className={"cursor-pointer p-2 hover:underline"} onClick={() => {}}>{x + 1}</button>
                 ))
             }
-            <span>{}</span>
+            <span>{pageValue}</span>
             {
                 ...[ pageValue + 1, pageValue + 2 ].filter(x => x < pageCount).map(x => (
-                    <Link key={x} className={"hover:underline"} onClick={() => {}}>{x + 1}</Link>
+                    <button key={x} className={"cursor-pointer p-2 hover:underline"} onClick={() => {}}>{x + 1}</button>
                 ))
             }
             {
                 pageValue + 2 < pageCount ? <span>...</span> : <></>
             }
-            <Link className={"hover:underline"} onClick={() => nextPage()}>Next</Link>
-            <Link className={"hover:underline"} onClick={() => lastPage()}>Last</Link>
+            <button className={"cursor-pointer p-2 hover:underline"} onClick={() => nextPage()}>Next</button>
+            <button className={"cursor-pointer p-2 hover:underline"} onClick={() => lastPage()}>Last</button>
         </div>
     )
 }
