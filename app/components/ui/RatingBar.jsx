@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Image from "next/image";
 
+import starIcon from "./assets/star-icon.png";
 import emptyIcon from  "./assets/star-empty-icon.png";
-import fullIcon from "./assets/star-icon.png";
 
 export default function RatingBar({ value, setter }) {
     const [ hovering, setHovering ] = useState(0);
@@ -12,13 +12,13 @@ export default function RatingBar({ value, setter }) {
             if (n <= hovering) {
                 return fullIcon;
             }
-            return emptyIcon;
+            return starIcon;
         }
         if (!value) {
             return emptyIcon;
         }
         if (n <= value) {
-            return fullIcon;
+            return starIcon;
         }
         return emptyIcon;
     }

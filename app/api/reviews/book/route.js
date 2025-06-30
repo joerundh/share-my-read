@@ -32,13 +32,18 @@ export async function GET(request) {
     const sorting = Number(req.sorting || 0);
 
     try {
+        /*
         const query = `*[_type == "review" && bookId == "${req.bookId}"]) | order(${[ "_createdAt", "rating desc", "rating asc" ][sorting]}) {
+            _id, userId, header, body, rating 
+        }[${offset}...${offset + limit}]`;
+        */
+        const query = `*[_type == "review"] {
             _id,
             userId,
             header,
             body,
             rating
-        }[${offset}...${offset + limit}]`;
+        }`
 
         const data = await client.fetch(query, { cache: "no-store" });
         return Response.json({ results: data })

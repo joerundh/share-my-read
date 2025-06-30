@@ -1,18 +1,30 @@
+import Image from "next/image";
+
+import starIcon from "./assets/star-icon.png";
+import emptyIcon from "./assets/star-icon.png";
+
 export default function Rating({ value }) {
+    const getIcon = x => {
+        if (!value) {
+            return emptyIcon;
+        }
+        if (x <= value) {
+            return starIcon;
+        }
+        return emptyIcon;
+    }
     return (
-        <div className={"w-fit flex flex-row gap-3 items-center"}>
+        <div className={"w-fit flex flex-row gap-1 items-center"}>
             <div className={"flex flex-row"}>
             {
                 new Array(5).fill(0)
                         .map((x, index) => index + 1)
                         .map(x => (
-                                <Image key={x} src={
-                                    x <= value ? "./assets/star-icon.png" : "./assets/star-empty-icon.png"
-                                } className={"w-[20px] h-[20px]"} />
+                                <Image width={15} height={15} key={x} src={getIcon(x)} alt={"Star icon"} />
                         ))
             }
             </div>
-            <span>
+            <span className={"text-sm"}>
                 {
                     value ? `${value}/5` : "No rating"
                 }
