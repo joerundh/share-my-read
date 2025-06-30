@@ -27,12 +27,12 @@ export async function GET(request) {
         return Response.json({ message: "Missing reference." }, { status: 400 });
     }
     
-    const offset = req.offset || 0;
-    const limit = req.limit || 5;
-    const sorting = Number(req.sorting) || 0;
+    const offset = Number(req.offset || 0);
+    const limit = Number(req.limit || 5);
+    const sorting = Number(req.sorting || 0);
 
     try {
-        const query = `count(*[_type == "review" && bookId == "${req.bookId}"]) | order(${[ "_createdAt", "rating desc", "rating asc" ][sorting]}) {
+        const query = `*[_type == "review" && bookId == "${req.bookId}"]) | order(${[ "_createdAt", "rating desc", "rating asc" ][sorting]}) {
             _id,
             userId,
             header,

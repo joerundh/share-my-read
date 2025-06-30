@@ -7,18 +7,18 @@ by a given user
 */
 
 export async function GET(request) {
-    const { id: clientId } = await auth();
+    const { userIdd: clientId } = await auth();
 
     if (!clientId) {
         return Response.json({ message: "Access denied." }, { status: 401 });
     }
 
-    const req = await request.body;
+    const req = await request.nextUrl.searchParams.entries().reduce((acc, [key, value]) => { acc[key] = value; return acc; }, {});
 
     if (!req.clientId) {
         return Response.json({ message: "Access denied." }, { status: 401 });
     }
-    if (!req.clientId !== clientId) {
+    if (req.clientId !== clientId) {
         return Response.json({ message: "Access denied." }, { status: 401 });
     }
 
@@ -26,9 +26,9 @@ export async function GET(request) {
         return Response.json({ message: "Missing reference." }, { status: 400 });
     }
 
-    const offset = req.offset || 0;
-    const limit = req.limit || 5;
-    const sorting = req.sorting || 0;
+    const offset = Number(req.offset) || 0;
+    const limit = Number(req.limit) || 5;
+    const sorting = Number(req.sorting) || 0;
 
     try {
         const query = `*[_type == "review" && userId == "${req.userId}"] | order(${[ "_createdAt", "rating desc", "rating asc" ][sorting]}) {
@@ -40,7 +40,7 @@ export async function GET(request) {
         }[${offset}...${offset + limit}]`;
 
         const data = await client.fetch(query, { cache: "no-store" });
-        return Response.json({ count: count })
+        return Response.json({ results: data })
     }
     catch (e) {
         console.log(e);

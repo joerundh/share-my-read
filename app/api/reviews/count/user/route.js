@@ -13,7 +13,7 @@ export async function GET(request) {
     if (!req.clientId) {
         return Response.json({ message: "Access denied." }, { status: 401 });
     }
-    if (!req.clientId !== clientId) {
+    if (req.clientId !== clientId) {
         return Response.json({ message: "Access denied." }, { status: 401 });
     }
 
