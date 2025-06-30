@@ -5,8 +5,8 @@ import Rating from "./Rating";
 import Image from "next/image";
 
 import editIcon from "./assets/edit-icon.png";
-import saveIcon from "./assets/save-icon.png"
-import cancelIcon from "./assets/cancel-icon.png"
+import saveIcon from "./assets/save-icon.png";
+import cancelIcon from "./assets/cancel-icon.png";
 
 export default function Review({ review }) {
     const { isLoaded, isSignedIn, user } = useUser();
@@ -50,7 +50,7 @@ export default function Review({ review }) {
 
     const cancelRating = () => {
         setEditedRating(rating);
-        setEditedRating(false);
+        setEditingRating(false);
     }
 
     useEffect(() => {
@@ -68,24 +68,24 @@ export default function Review({ review }) {
     const clientId = user.id;
 
     return (
-        <div className={"flex flex-row gap-1 mx-auto"}>
-            <div className={"w-[100px] bg-gray-500"}>
+        <div className={"p-2 flex flex-row gap-1 mx-auto"}>
+            <div className={"w-[100px] h-[200px] bg-gray-500"}>
                 {
                     // Profile
                 }
             </div>
-            <div className={"p-3 flex flex-col justify-start items-stretch gap-2"}>
-                <div className={"flex flex-row justify-between items-center"}>
+            <div className={"w-[600px] p-3 flex flex-col justify-start items-stretch gap-2"}>
+                <div className={"w-full flex flex-row justify-between items-center"}>
                     {
                         editingHeader ?
                             <>
-                                <input type="text" value={editedHeader} onChange={e => setEditedHeader(e.target.value)} />,
+                                <input type="text" value={editedHeader} onChange={e => setEditedHeader(e.target.value)} className={"w-[400px] border-1 rounded-xs p-1"} />,
                                 <div className={"flex flex-row gap-2"}>
-                                    <button className={"p-1 bg-gray-200 cursor-pointer"} onClick={() => saveHeader()}>
-                                        <Image src={saveIcon} width={15} height={15} alt={"Save"} />
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => saveHeader()} title={"Save edit"}>
+                                        <Image src={saveIcon} width={20} height={20} alt={"Save"} />
                                     </button>
-                                    <button className={"p-1 bg-gray-200 cursor-pointer"} onClick={() => cancelHeader()}>
-                                        <Image src={cancelIcon} width={15} height={15} alt={"Save"} />
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => cancelHeader()} title={"Cancel edit"}>
+                                        <Image src={cancelIcon} width={20} height={20} alt={"Save"} />
                                     </button>
                                 </div>
                             </>
@@ -94,25 +94,25 @@ export default function Review({ review }) {
                                 <h4 className={"font-bold"}>{header}</h4>
                                 {
                                     clientId === review.userId ? (
-                                        <button className={"p-1 bg-gray-200 cursor-pointer"} onClick={() => setEditingHeader(true)}>
-                                            <Image src={editIcon} width={15} height={15} alt={"Edit"} />
+                                        <button className={"bg-gray-200 cursor-pointer"} onClick={() => setEditingHeader(true)} title={"Edit header"}>
+                                            <Image src={editIcon} width={20} height={20} alt={"Edit"} />
                                         </button>
                                     ) : (<></>)
                                 }
                             </>
                     }
                 </div>
-                <div className={"flex flex-row justify-between items-center"}>
+                <div className={"w-full flex flex-row justify-between items-center"}>
                     {
                         editingRating ?
                             <>
                                 <RatingBar value={editedRating} setter={setEditedRating} />
                                 <div className={"flex flex-row gap-2"}>
-                                    <button className={"p-1 bg-gray-200 cursor-pointer"} onClick={() => saveRating()}>
-                                        <Image src={saveIcon} width={15} height={15} alt={"Save"} />
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => saveRating()} title={"Save edit"}>
+                                        <Image src={saveIcon} width={20} height={20} alt={"Save"} />
                                     </button>
-                                    <button className={"p-1 bg-gray-200 cursor-pointer"} onClick={() => cancelRating()}>
-                                        <Image src={cancelIcon} width={15} height={15} alt={"Cancel"} />
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => cancelRating()} title={"Cancel edit"}>
+                                        <Image src={cancelIcon} width={20} height={20} alt={"Cancel"} />
                                     </button>
                                 </div>
                             </>
@@ -121,39 +121,41 @@ export default function Review({ review }) {
                                 <Rating stars={rating} />
                                 {
                                     clientId === review.userId ? (
-                                        <button className={"p-1 bg-gray-200 cursor-pointer"} onClick={() => setEditingRating(true)}>
-                                            <Image src={editIcon} width={15} height={15} alt={"Edit"} />
+                                        <button className={"bg-gray-200 cursor-pointer"} onClick={() => setEditingRating(true)} title={"Edit rating"}>
+                                            <Image src={editIcon} width={20} height={20} alt={"Edit"} />
                                         </button>
                                     ) : (<></>)
                                 }
                             </>
                     }
                 </div>
-                <div className={"flex flex-column gap-2"}>
+                <div className={"w-full flex flex-row justify-between items-start gap-2"}>
                     {
                         editingBody ?
                             <>
-                                <textarea className={"w-full"} onChange={e => setEditedBody(e.target.value)}>{editedBody}</textarea>,
+                                <textarea className={"w-full border-[1px] focus:border-[1px] outline-0 rounded-xs h-[110px] resize-none p-1"} onChange={e => setEditedBody(e.target.value)} value={editedBody} />
                                 <div className={"flex flex-row justify-end gap-2"}>
-                                    <button className={"p-1 bg-gray-200 cursor-pointer"} onClick={() => saveBody()}>
-                                        <Image src={saveIcon} width={15} height={15} alt={"Save"} />
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => saveBody()} title={"Save edit"}>
+                                        <Image src={saveIcon} width={20} height={20} alt={"Save"} />
                                     </button>
-                                    <button className={"p-1 bg-gray-200 cursor-pointer"} onClick={() => cancelBody()}>
-                                        <Image src={cancelIcon} width={15} height={15} alt={"Cancel"} />
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => cancelBody()} title={"Cancel edit"}>
+                                        <Image src={cancelIcon} width={20} height={20} alt={"Cancel"} />
                                     </button>
                                 </div>
                             </>
                         :
                             <>
-                                {
-                                    ...body.split("\\n").filter(x => !!x).map((par, index) => (
-                                        <p key={index}>{par}</p>
-                                    ))
-                                }
+                                <div className={"w-full"}>
+                                    {
+                                        ...body.split("\\n").filter(x => !!x).map((par, index) => (
+                                            <p key={index}>{par}</p>
+                                        ))
+                                    }
+                                </div>
                                 {
                                     clientId === review.userId ? (
-                                        <button className={"p-1 bg-gray-200 cursor-pointer"} onClick={() => setEditingBody(true)}>
-                                            <Image src={editIcon} width={15} height={15} alt={"Edit"} />
+                                        <button className={"bg-gray-200 cursor-pointer"} onClick={() => setEditingBody(true)} title={"Edit body"}>
+                                            <Image src={editIcon} width={20} height={20} alt={"Edit"} />
                                         </button>
                                     ) : (<></>)
                                 }

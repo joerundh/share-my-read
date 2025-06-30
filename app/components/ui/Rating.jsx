@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import starIcon from "./assets/star-icon.png";
-import emptyIcon from "./assets/star-icon.png";
+import emptyIcon from "./assets/star-empty-icon.png";
 
 export default function Rating({ value }) {
     const getIcon = x => {
@@ -14,19 +14,19 @@ export default function Rating({ value }) {
         return emptyIcon;
     }
     return (
-        <div className={"w-fit flex flex-row gap-1 items-center"}>
+        <div className={"w-fit flex flex-row gap-2 items-center"}>
             <div className={"flex flex-row"}>
             {
                 new Array(5).fill(0)
                         .map((x, index) => index + 1)
                         .map(x => (
-                                <Image width={15} height={15} key={x} src={getIcon(x)} alt={"Star icon"} />
+                                <Image width={18} height={18} key={x} src={getIcon(x)} alt={"Star icon"} />
                         ))
             }
             </div>
             <span className={"text-sm"}>
                 {
-                    value ? `${value}/5` : "No rating"
+                    value ? `${value}/5` : "(No rating)"
                 }
             </span>
         </div>

@@ -3,7 +3,7 @@ export default function PaginationSettings({ perPageValue, perPageSetter, sortin
         <div className={"flex flex-row justify-between items-center"}>
             <label className={"flex flex-row items-center gap-2"}>
                 <span>Results per page:</span>
-                <select value={perPageValue} onChange={e => perPageSetter(e.target.value)}>
+                <select value={perPageValue} onChange={e => perPageSetter(e.target.value)} className={"border-[1px] border-black rounded-xs"}>
                     <option value={1}>1</option>
                     <option value={5}>5</option>
                     <option value={10}>10</option>
@@ -11,7 +11,7 @@ export default function PaginationSettings({ perPageValue, perPageSetter, sortin
             </label>
             <label className={"flex flex-row items-center gap-2"}>
                 <span>Sort by:</span>
-                <select value={sortingValue} onChange={e => sortingSetter(e.target.value)}>
+                <select value={sortingValue} onChange={e => sortingSetter(e.target.value)} className={"border-[1px] border-black rounded-xs"}>
                     <option value={0}>Date added</option>
                     <option value={1}>Rating, descending</option>
                     <option value={2}>Rating, ascending</option>

@@ -35,7 +35,7 @@ export default function Paginator({ pageValue, pageSetter, perPageValue, pageCou
                     <button key={x} className={"cursor-pointer p-2 hover:underline"} onClick={() => {}}>{x + 1}</button>
                 ))
             }
-            <span>{pageValue}</span>
+            <span>{pageValue + 1}</span>
             {
                 ...[ pageValue + 1, pageValue + 2 ].filter(x => x < pageCount).map(x => (
                     <button key={x} className={"cursor-pointer p-2 hover:underline"} onClick={() => {}}>{x + 1}</button>

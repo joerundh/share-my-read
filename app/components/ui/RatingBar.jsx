@@ -10,9 +10,9 @@ export default function RatingBar({ value, setter }) {
     const pickIcon = n => {
         if (hovering) {
             if (n <= hovering) {
-                return fullIcon;
+                return starIcon;
             }
-            return starIcon;
+            return emptyIcon;
         }
         if (!value) {
             return emptyIcon;
@@ -31,15 +31,15 @@ export default function RatingBar({ value, setter }) {
     }
 
     return (
-        <div className={"w-fit h-fit flex flex-row justify-between align-center gap-2"}>
-            <span>{displayedValue()}</span>
-            <div className={"flex flex-row justify-start align-center"}>
-                <Image className={"w-[20px] h-[20px] cursor-pointer"} src={pickIcon(1)} alt="Star icon" onMouseDown={() => setter(1)} onMouseEnter={() => setHovering(1)} onMouseLeave={() => setHovering(0)} />
-                <Image className={"w-[20px] h-[20px] cursor-pointer"} src={pickIcon(2)} alt="Star icon" onMouseDown={() => setter(2)} onMouseEnter={() => setHovering(2)} onMouseLeave={() => setHovering(0)} />
-                <Image className={"w-[20px] h-[20px] cursor-pointer"} src={pickIcon(3)} alt="Star icon" onMouseDown={() => setter(3)} onMouseEnter={() => setHovering(3)} onMouseLeave={() => setHovering(0)} />
-                <Image className={"w-[20px] h-[20px] cursor-pointer"} src={pickIcon(4)} alt="Star icon" onMouseDown={() => setter(4)} onMouseEnter={() => setHovering(4)} onMouseLeave={() => setHovering(0)} />
-                <Image className={"w-[20px] h-[20px] cursor-pointer"} src={pickIcon(5)} alt="Star icon" onMouseDown={() => setter(5)} onMouseEnter={() => setHovering(5)} onMouseLeave={() => setHovering(0)} />
+        <div className={"w-fit flex flex-row gap-2 items-center"}>
+            <div className={"flex flex-row"}>
+                <Image className={"w-[18px] h-[18px] cursor-pointer"} src={pickIcon(1)} alt="Star icon" onMouseDown={() => setter(1)} onMouseEnter={() => setHovering(1)} onMouseLeave={() => setHovering(0)} />
+                <Image className={"w-[18px] h-[18px] cursor-pointer"} src={pickIcon(2)} alt="Star icon" onMouseDown={() => setter(2)} onMouseEnter={() => setHovering(2)} onMouseLeave={() => setHovering(0)} />
+                <Image className={"w-[18px] h-[18px] cursor-pointer"} src={pickIcon(3)} alt="Star icon" onMouseDown={() => setter(3)} onMouseEnter={() => setHovering(3)} onMouseLeave={() => setHovering(0)} />
+                <Image className={"w-[18px] h-[18px] cursor-pointer"} src={pickIcon(4)} alt="Star icon" onMouseDown={() => setter(4)} onMouseEnter={() => setHovering(4)} onMouseLeave={() => setHovering(0)} />
+                <Image className={"w-[18px] h-[18px] cursor-pointer"} src={pickIcon(8)} alt="Star icon" onMouseDown={() => setter(8)} onMouseEnter={() => setHovering(8)} onMouseLeave={() => setHovering(0)} />
             </div>
+            <span className={"text-sm"}>{displayedValue()}</span>
         </div>
     )
 }
