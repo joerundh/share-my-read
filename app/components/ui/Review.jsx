@@ -7,10 +7,9 @@ import Image from "next/image";
 import editIcon from "./assets/edit-icon.png";
 import saveIcon from "./assets/save-icon.png";
 import cancelIcon from "./assets/cancel-icon.png";
+import LikeButton from "./LikeButton";
 
-export default function Review({ review }) {
-    const { isLoaded, isSignedIn, user } = useUser();
-
+export default function Review({ review, clientId }) {
     const [ header, setHeader ] = useState(review.header);
     const [ body, setBody ] = useState(review.body);
     const [ rating, setRating ] = useState(review.rating || 0);
@@ -65,8 +64,6 @@ export default function Review({ review }) {
         // API
     }, [ rating ]);
 
-    const clientId = user.id;
-
     return (
         <div className={"p-2 flex flex-row gap-1 mx-auto"}>
             <div className={"w-[100px] h-[200px] bg-gray-500"}>
@@ -74,7 +71,7 @@ export default function Review({ review }) {
                     // Profile
                 }
             </div>
-            <div className={"w-[600px] p-3 flex flex-col justify-start items-stretch gap-2"}>
+            <div className={"w-[500px] p-3 flex flex-col justify-start items-stretch gap-2"}>
                 <div className={"w-full flex flex-row justify-between items-center"}>
                     {
                         editingHeader ?
@@ -163,6 +160,7 @@ export default function Review({ review }) {
                     }
                 </div>
             </div>
+            <LikeButton review={review} clientId={clientId} />
         </div>
     )
 }

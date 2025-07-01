@@ -50,7 +50,7 @@ export default function ReviewsPanel({ bookId }) {
                 [ "bookId", bookId ]
             ]);
 
-            const res = await fetch(`/api/reviews/count/book?${searchParams.toString()}`);
+            const res = await fetch(`/api/reviews/book/count?${searchParams.toString()}`);
             if (!res.ok) {
                 throw new Error("Could not fetch data.")
             }
@@ -122,7 +122,7 @@ export default function ReviewsPanel({ bookId }) {
                 {
                     data?.length ? 
                         data.map((review, index) => (
-                            <Review key={index} review={review} />
+                            <Review key={index} review={review} clientId={clientId} />
                         ))
                     : (
                         <p className={"w-full text-center"}>No reviews.</p>

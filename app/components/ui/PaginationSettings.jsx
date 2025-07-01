@@ -12,9 +12,10 @@ export default function PaginationSettings({ perPageValue, perPageSetter, sortin
             <label className={"flex flex-row items-center gap-2"}>
                 <span>Sort by:</span>
                 <select value={sortingValue} onChange={e => sortingSetter(e.target.value)} className={"border-[1px] border-black rounded-xs"}>
-                    <option value={0}>Date added</option>
-                    <option value={1}>Rating, descending</option>
-                    <option value={2}>Rating, ascending</option>
+                    <option value={0}>Date added, descending</option>
+                    <option value={1}>Date added, ascending</option>
+                    <option value={2}>Rating, descending</option>
+                    <option value={3}>Rating, ascending</option>
                 </select>
             </label>
         </div>
