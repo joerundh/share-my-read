@@ -2,7 +2,6 @@
 import Link from "next/link";
 import CoverPhoto from "@/app/components/ui/CoverPhoto";
 import InlineList from "@/app/components/ui/InlineList";
-import ReviewForm from "./ReviewForm";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import ReviewsPanel from "./ReviewsPanel";
@@ -40,7 +39,15 @@ export default function BookProfile({ bookObject }) {
                     )
                 }
             </div>
-            <ReviewsPanel bookId={bookObject.id} />
+            <h3 className={"text-lg font-bold"}>Reviews</h3>
+            <div className={"flex flex-col justify-between gap-5"}>
+                {
+                    isSignedIn ?
+                        <ReviewsPanel bookId={bookObject.id} clientId={user.id} />
+                    :
+                        <p>Log in or sign up to read and write reviews.</p>  
+                }
+            </div>
         </div>
     )
 }

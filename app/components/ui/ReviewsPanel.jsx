@@ -7,9 +7,9 @@ import LoadingIcon from "./LoadingIcon";
 import Paginator from "./Paginator";
 import PaginationSettings from "./PaginationSettings";
 
-export default function ReviewsPanel({ bookId }) {
+export default function ReviewsPanel({ bookId, clientId }) {
     // User
-    const { isLoaded, isSignedIn, user, error: userError } = useUser();
+    const { isLoaded, isSignedIn, user } = useUser();
 
     // State variables
     const [ page, setPage ] = useState(0);
@@ -22,15 +22,15 @@ export default function ReviewsPanel({ bookId }) {
 
     // Check whether the client user has written a review
 
-    const { data: found, isLoading: searchLoading, error: searchError } = useQuery({
-        queryKey: [ "book-reviews", "check", bookId ],
+    const { data: found, isLoading: searchLoading, error: searchError, refetch: research } = useQuery({
+        queryKey: [ "book-reviews", "search", bookId, clientId ],
         queryFn: async () => {
-            const searchParams = new URLSearchParams([
+            const params = new URLSearchParams([
                 [ "clientId", clientId ],
-                [ "bookId", bookId ],                
+                [ "bookId", `${bookId}` ],
                 [ "userId", clientId ]
-            ])
-            const res = await fetch(`/api/reviews/book/user?${searchParams.toString()}`);
+            ]);
+            const res = await fetch(`/api/reviews/book/user?${params.toString()}`);
             if (!res.ok) {
                 throw new Error("Could not fetch data.")
             }
@@ -42,7 +42,7 @@ export default function ReviewsPanel({ bookId }) {
 
     // Number of reviews
 
-    const { data: count, countLoading, countError } = useQuery({
+    const { data: count, isLoading: countLoading, error: countError } = useQuery({
         queryKey: [ "book-review", "count", bookId ],
         queryFn: async () => {
             const searchParams = new URLSearchParams([
@@ -58,11 +58,11 @@ export default function ReviewsPanel({ bookId }) {
             return obj.count;
         },
         enabled: isSignedIn
-    })
+    });
 
     // Fetch paginated reviews
 
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading, error, refetch, isRefetching, isRefetchError } = useQuery({
         queryKey: [ "book-reviews", bookId, page, perPage, sorting ],
         queryFn: async () => {
             const searchParams = new URLSearchParams([
@@ -80,7 +80,29 @@ export default function ReviewsPanel({ bookId }) {
             return obj.results;
         },
         enabled: isSignedIn
-    })
+    });
+
+    //
+
+    async function submit(e, pender) {
+        const formData = new FormData(e.target);
+        const data = formData.entries().reduce((acc, [ key, value ]) => { acc[key] = value; return acc; }, {})
+        data.rating = Number(data.rating);
+
+        data.bookId = `${bookId}`;
+        data.userId = clientId;
+
+        const res = await fetch("/api/reviews/post", {
+            method: "POST",
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+            pender(false);
+            return;
+        }
+        research();
+        refetch();
+    }
 
     if (!isLoaded) {
         return (
@@ -93,31 +115,25 @@ export default function ReviewsPanel({ bookId }) {
             <p className={"w-full text-center"}>Log in to read reviews.</p>
         )
     }
-    
-    const clientId = user.id;
+
+    const pageCount = Math.ceil(count/perPage);
 
     const reviewForm = () => {
-        if (searchLoading) {
-            return <Fragment key={0} />
+        if (searchLoading || searchError || found) {
+            return <></>
         }
-        if (searchError) {
-            return <Fragment key={0} />
-        }
-        if (found) {
-            return <Fragment key={0} />
-        }
-        return <ReviewForm key={0} />
+        return <ReviewForm bookId={bookId} clientId={clientId} submitter={submit} />
     }
 
     const reviews = () => {
-        if (countLoading || isLoading) {
-            return <LoadingIcon key={1} message={"Loading reviews..."} />
+        if (countLoading || isLoading || isRefetching) {
+            return <LoadingIcon message={"Loading reviews..."} />
         }
-        if (countError || error) {
-            return <p key={1} className={"w-full text-center"}>An error occurred, try again later.</p>
+        if (countError || error || isRefetchError) {
+            return <p className={"w-full text-center"}>An error occurred, try again later.</p>
         }
         return (
-            <Fragment key={1}>
+            <div className={"flex flex-col justify-between items-center gap-5"}>
                 <PaginationSettings perPageValue={perPage} perPageSetter={setPerPage} sortingValue={sorting} sortingSetter={setSorting} />
                 {
                     data?.length ? 
@@ -128,20 +144,19 @@ export default function ReviewsPanel({ bookId }) {
                         <p className={"w-full text-center"}>No reviews.</p>
                     )
                 }
-                <Paginator pageValue={page} pageSetter={setPage} perPageValue={perPage} pageCount={count} />
-            </Fragment>
+                <Paginator pageValue={page} pageSetter={setPage} perPageValue={perPage} pageCount={pageCount} />
+            </div>
         );
     }
 
     return (
-        <div className={"flex flex-col justify-between gap-3"}>
-            <h3 className={"text-lg font-bold"}>Reviews</h3>
+        <>
             {
-                [
-                    reviewForm(),
-                    reviews()
-                ]
+                reviewForm()
             }
-        </div>
+            {
+                reviews()
+            }
+        </>
     );
 }

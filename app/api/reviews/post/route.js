@@ -1,3 +1,4 @@
+import { client } from "@/app/lib/sanity";
 import { auth } from "@clerk/nextjs/server";
 
 export async function POST(request) {
@@ -7,13 +8,13 @@ export async function POST(request) {
         return Response.json({ message: "Access denied." }, { status: 401 });
     }
 
-    const req = request.body;
+    const req = await request.json();
 
-    if (!req.clientId) {
+    if (!req.userId) {
         return Response.json({ message: "Access denied." }, { status: 401 });
     }
-    if (req.clientId !== clientId) {
-        return Response.json({ message: "Access denied." }, { status: 401 });
+    if (req.userId !== clientId) {
+        return Response.json({ message: "Action prohibited." }, { status: 403 });
     }
 
     if (!req.bookId) {
@@ -24,14 +25,25 @@ export async function POST(request) {
     }
 
     try {
-        const res = await fetch(`/api/review/book/user?clientId=${clientId}&bookId=${req.bookId}&userId=${clientId}`);
-        if (!res.ok) {
-            throw new Error("Error fetching data.");
+        const count = await client.fetch(`count(*[_type == "review" && bookId == "${req.bookId}" && userId == "${clientId}"])`);
+        if (count !== 0) {
+            return Response.json({ message: "Action prohibited." }, { status: 403 })
         }
-        const obj = await res.json();
-        if (obj.result) {
-            return Response.json({ message: "The action is prohibited." }, { status: 403 })
+
+        const created = await client
+                                .create({
+                                    _type: "review",
+                                    bookId: req.bookId,
+                                    userId: req.userId,
+                                    header: req.header,
+                                    body: req.body,
+                                    rating: req.rating || 0,
+                                    likes: []
+                                });
+        if (created["_id"]) {
+            return Response.json({ message: "Success." });
         }
+        return Response.json({ message: "An error occurred." }, { status: 502 })
     }
     catch (e) {
         console.log(e.toString());

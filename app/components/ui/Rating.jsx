@@ -3,7 +3,7 @@ import Image from "next/image";
 import starIcon from "./assets/star-icon.png";
 import emptyIcon from "./assets/star-empty-icon.png";
 
-export default function Rating({ value }) {
+export default function Rating({ value, align }) {
     const getIcon = x => {
         if (!value) {
             return emptyIcon;
@@ -15,6 +15,15 @@ export default function Rating({ value }) {
     }
     return (
         <div className={"w-fit flex flex-row gap-2 items-center"}>
+            {
+                align === "left" ? 
+                    <span className={"w-[40px] text-sm text-center"}>
+                        {
+                            value ? `${value}/5` : "(No rating)"
+                        }
+                    </span>
+                : <></>
+            }
             <div className={"flex flex-row"}>
             {
                 new Array(5).fill(0)
@@ -24,11 +33,15 @@ export default function Rating({ value }) {
                         ))
             }
             </div>
-            <span className={"text-sm"}>
-                {
-                    value ? `${value}/5` : "(No rating)"
-                }
-            </span>
+            {
+                align === "right" ? 
+                    <span className={"text-sm text-center"}>
+                        {
+                            value ? `${value}/5` : "(No rating)"
+                        }
+                    </span>
+                : <></>
+            }
         </div>
     );
 }

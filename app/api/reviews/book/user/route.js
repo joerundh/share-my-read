@@ -23,10 +23,10 @@ export async function GET(request) {
     }
 
     try {
-        const query = `*[_type == "review" && userId == "${req.userId}" && bookId == "${req.bookId}"]{}`;
+        const query = `count(*[_type == "review" && userId == "${req.userId}" && bookId == "${req.bookId}"])`;
 
         const data = await client.fetch(query, { cache: "no-store" });
-        return Response.json({ result: data.length > 0 });
+        return Response.json({ message: "Success.", result: data > 0 });
     }
     catch (e) {
         console.log(e)

@@ -37,7 +37,7 @@ export async function GET(request) {
             _id, userId, header, body, rating 
         }[${offset}...${offset + limit}]`;
         */
-        const query = `*[_type == "review"] | order(${[ "_createdAt desc", "_createdAt asc", "rating desc", "rating asc" ][sorting]}) {
+        const query = `*[_type == "review" && bookId == "${req.bookId}"] | order(${[ "_createdAt desc", "_createdAt asc", "rating desc", "rating asc" ][sorting]}) {
             _id,
             userId,
             header,
@@ -47,7 +47,6 @@ export async function GET(request) {
         }[${offset}...${offset + limit}]`;
 
         const data = await client.fetch(query, { cache: "no-store" });
-        data.likes = data.likes || [];
         return Response.json({ results: data })
     }
     catch (e) {

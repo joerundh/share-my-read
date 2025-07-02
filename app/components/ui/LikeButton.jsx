@@ -45,8 +45,8 @@ export default function LikeButton({ review, clientId }) {
     if (review.userId === clientId) {
         return (
             <div className={"flex flex-col justify-center items-center"}>
-                <div className={"cursor-pointer w-[50px] h-[50px]"}>
-                    <Image src={emptyIcon} width={50} height={50} alt={"Likes"} />
+                <div className={"flex flex-col justify-center items-center w-[50px] h-[50px] bg-gray-200"} title={"Likes"}>
+                    <Image src={emptyIcon} width={20} height={20} alt={"Likes"} />
                 </div>
                 <p className={"p-1 text-center"}>{likes.length}</p>
             </div>
@@ -62,7 +62,7 @@ export default function LikeButton({ review, clientId }) {
                             <LoadingIcon />
                         </div>
                     :
-                        <button className={"w-[50px] h-[50px] flex flex-col justify-center items-center rounded-sm bg-slate-300 cursor-pointer"} onClick={() => clickHandler()} title={`${liked ? "Unlike" : "Like"} this review`}>
+                        <button className={"w-[50px] h-[50px] flex flex-col justify-center items-center rounded-sm bg-slate-300 cursor-pointer"} onClick={() => clickHandler()} title={`${liked ? "Un-like" : "Like"} this review`}>
                             <Image src={liked ? likeIcon : emptyIcon} width={20} height={20} alt={"Thumb up"} />
                         </button>
                 }

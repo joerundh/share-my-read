@@ -12,7 +12,7 @@ import LikeButton from "./LikeButton";
 export default function Review({ review, clientId }) {
     const [ header, setHeader ] = useState(review.header);
     const [ body, setBody ] = useState(review.body);
-    const [ rating, setRating ] = useState(review.rating || 0);
+    const [ rating, setRating ] = useState(review.rating);
 
     const [ editingHeader, setEditingHeader ] = useState(false);
     const [ editingBody, setEditingBody ] = useState(false);
@@ -65,13 +65,13 @@ export default function Review({ review, clientId }) {
     }, [ rating ]);
 
     return (
-        <div className={"p-2 flex flex-row gap-1 mx-auto"}>
-            <div className={"w-[100px] h-[200px] bg-gray-500"}>
+        <div className={"w-full p-2 flex flex-row gap-1 mx-auto"}>
+            <div className={"size-[180px] bg-gray-500"}>
                 {
                     // Profile
                 }
             </div>
-            <div className={"w-[500px] p-3 flex flex-col justify-start items-stretch gap-2"}>
+            <div className={"w-[600px] p-3 flex flex-col justify-start items-stretch gap-2"}>
                 <div className={"w-full flex flex-row justify-between items-center"}>
                     {
                         editingHeader ?
@@ -115,7 +115,7 @@ export default function Review({ review, clientId }) {
                             </>
                         :
                             <>
-                                <Rating stars={rating} />
+                                <Rating value={rating} align={"right"}/>
                                 {
                                     clientId === review.userId ? (
                                         <button className={"bg-gray-200 cursor-pointer"} onClick={() => setEditingRating(true)} title={"Edit rating"}>
