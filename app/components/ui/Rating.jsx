@@ -19,7 +19,7 @@ export default function Rating({ value, align }) {
                 align === "left" ? 
                     <span className={"w-[40px] text-sm text-center"}>
                         {
-                            value ? `${value}/5` : "(No rating)"
+                            value ? `${value} / 5` : "(No rating)"
                         }
                     </span>
                 : <></>
@@ -35,9 +35,9 @@ export default function Rating({ value, align }) {
             </div>
             {
                 align === "right" ? 
-                    <span className={"text-sm text-center"}>
+                    <span className={"w-[40px] text-sm text-center"}>
                         {
-                            value ? `${value}/5` : "(No rating)"
+                            value ? `${value} / 5` : "(No rating)"
                         }
                     </span>
                 : <></>

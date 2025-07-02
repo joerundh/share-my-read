@@ -14,18 +14,24 @@ export async function POST(request) {
     if (!req.reviewId) {
         return Response.json({ message: "Reference missing." }, { status: 400 })
     }
-    if (!req.header && !req.body && !req.rating) {
+    if ((!req.header || req.header === "") && (!req.body || req.body === "") && !req.rating) {
         return Response.json({ message: "Missing content." }, { status: 400 })
     }
 
     try {
+        const editObject = {}
+        if (req.header) {
+            editObject["header"] = req.header;
+        }
+        if (req.body) {
+            editObject["body"] = req.body;
+        }
+        if (req.rating) {
+            editObject["rating"] = Number(req.rating);
+        }
         const edited = await client
                                 .patch(req.reviewId)
-                                .set({
-                                    header: req.header,
-                                    body: req.body,
-                                    rating: Number(req.rating)
-                                })
+                                .set(editObject)
                                 .commit();
         return Response.json({ message: "Success." });
     }

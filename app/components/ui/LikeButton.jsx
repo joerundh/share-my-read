@@ -44,8 +44,8 @@ export default function LikeButton({ review, clientId }) {
 
     if (review.userId === clientId) {
         return (
-            <div className={"flex flex-col justify-center items-center"}>
-                <div className={"flex flex-col justify-center items-center w-[50px] h-[50px] bg-gray-200"} title={"Likes"}>
+            <div className={"h-fit my-auto flex flex-col justify-center items-center border-1 border-gray-500 rounded-sm"}>
+                <div className={"flex flex-col justify-center items-center w-[50px] h-[50px]"} title={"Likes"}>
                     <Image src={emptyIcon} width={20} height={20} alt={"Likes"} />
                 </div>
                 <p className={"p-1 text-center"}>{likes.length}</p>

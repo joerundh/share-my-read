@@ -132,21 +132,14 @@ export default function ReviewsPanel({ bookId, clientId }) {
         if (countError || error || isRefetchError) {
             return <p className={"w-full text-center"}>An error occurred, try again later.</p>
         }
-        return (
-            <div className={"flex flex-col justify-between items-center gap-5"}>
-                <PaginationSettings perPageValue={perPage} perPageSetter={setPerPage} sortingValue={sorting} sortingSetter={setSorting} />
-                {
-                    data?.length ? 
-                        data.map((review, index) => (
-                            <Review key={index} review={review} clientId={clientId} />
-                        ))
-                    : (
-                        <p className={"w-full text-center"}>No reviews.</p>
-                    )
-                }
-                <Paginator pageValue={page} pageSetter={setPage} perPageValue={perPage} pageCount={pageCount} />
-            </div>
-        );
+        if (!data?.length) {
+            return (
+                <p className={"w-full text-center"}>No reviews.</p>
+            );
+        }
+        return data.map((review, index) => (
+            <Review key={index} review={review} clientId={clientId} />
+        ))
     }
 
     return (
@@ -154,9 +147,13 @@ export default function ReviewsPanel({ bookId, clientId }) {
             {
                 reviewForm()
             }
-            {
+            <div className={"flex flex-col justify-between items-center gap-5"}>
+                <PaginationSettings perPageValue={perPage} perPageSetter={setPerPage} sortingValue={sorting} sortingSetter={setSorting} />
+                {
                 reviews()
-            }
+                }
+                <Paginator pageValue={page} pageSetter={setPage} perPageValue={perPage} pageCount={pageCount} />
+            </div>
         </>
     );
 }

@@ -38,7 +38,7 @@ export default function RatingBar({ name, value, setter, align }) {
         <div className={"w-fit flex flex-row gap-2 items-center"}>
             <input name={name} type="hidden" value={value} />
             {
-                align === "left" ? <span className={"w-[40px] text-md text-center"}>{displayedValue()}</span> : <></>
+                align === "left" ? <span className={"w-[40px] text-sm text-center"}>{displayedValue()}</span> : <></>
             }
             <div className={"flex flex-row"}>
                 <Image className={"w-[18px] h-[18px] cursor-pointer"} src={pickIcon(1)} alt="Star icon" onMouseDown={() => setter(1)} onMouseEnter={() => setHovering(1)} onMouseLeave={() => setHovering(0)} />
@@ -48,7 +48,7 @@ export default function RatingBar({ name, value, setter, align }) {
                 <Image className={"w-[18px] h-[18px] cursor-pointer"} src={pickIcon(5)} alt="Star icon" onMouseDown={() => setter(5)} onMouseEnter={() => setHovering(5)} onMouseLeave={() => setHovering(0)} />
             </div>
             {
-                align === "right" ? <span className={"w-[40px] text-md text-center"}>{displayedValue()}</span> : <></>
+                align === "right" ? <span className={"w-[40px] text-sm text-center"}>{displayedValue()}</span> : <></>
             }
         </div>
     )

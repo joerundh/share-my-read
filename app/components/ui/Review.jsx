@@ -22,18 +22,60 @@ export default function Review({ review, clientId }) {
     const [ editedBody, setEditedBody ] = useState(body);
     const [ editedRating, setEditedRating ] = useState(rating);
 
-    const saveHeader = () => {
-        setHeader(editedHeader);
+    const saveHeader = async () => {
+        if (editedHeader === "") {
+            return;
+        }
+        const res = await fetch("/api/reviews/edit", {
+            method: "POST",
+            body: JSON.stringify({
+                clientId: clientId,
+                reviewId: review["_id"],
+                header: editedHeader
+            })
+        });
+        if (res.ok) {
+            setHeader(editedHeader);
+        } else {
+            setEditedHeader(header);
+        }
         setEditingHeader(false);
     }
 
-    const saveBody = () => {
-        setBody(editedBody);
+    const saveBody = async () => {
+        if (editedBody === "") {
+            return;
+        }
+        const res = await fetch("/api/reviews/edit", {
+            method: "POST",
+            body: JSON.stringify({
+                clientId: clientId,
+                reviewId: review["_id"],
+                body: editedBody
+            })
+        });
+        if (res.ok) {
+            setBody(editedBody);
+        } else {
+            setEditedBody(body);
+        }
         setEditingBody(false);
     }
 
-    const saveRating = () => {
-        setRating(editedRating);
+    const saveRating = async () => {
+        const res = await fetch("/api/reviews/edit", {
+            method: "POST",
+            body: JSON.stringify({
+                clientId: clientId,
+                reviewId: review["_id"],
+                rating: editedRating
+            })
+        });
+        if (res.ok) {
+            setRating(editedRating);
+        } else {
+            setEditedRating(rating);
+        }
         setEditingRating(false);
     }
 
@@ -52,18 +94,6 @@ export default function Review({ review, clientId }) {
         setEditingRating(false);
     }
 
-    useEffect(() => {
-        // API
-    }, [ header ]);
-
-    useEffect(() => {
-        // API
-    }, [ body ]);
-
-    useEffect(() => {
-        // API
-    }, [ rating ]);
-
     return (
         <div className={"w-full p-2 flex flex-row gap-1 mx-auto"}>
             <div className={"size-[180px] bg-gray-500"}>
@@ -78,7 +108,7 @@ export default function Review({ review, clientId }) {
                             <>
                                 <input type="text" value={editedHeader} onChange={e => setEditedHeader(e.target.value)} className={"w-[400px] border-1 rounded-xs p-1"} />,
                                 <div className={"flex flex-row gap-2"}>
-                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => saveHeader()} title={"Save edit"}>
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={saveHeader} title={"Save edit"}>
                                         <Image src={saveIcon} width={20} height={20} alt={"Save"} />
                                     </button>
                                     <button className={"bg-gray-200 cursor-pointer"} onClick={() => cancelHeader()} title={"Cancel edit"}>
@@ -103,12 +133,12 @@ export default function Review({ review, clientId }) {
                     {
                         editingRating ?
                             <>
-                                <RatingBar value={editedRating} setter={setEditedRating} />
+                                <RatingBar value={editedRating} setter={setEditedRating} align={"right"} />
                                 <div className={"flex flex-row gap-2"}>
-                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => saveRating()} title={"Save edit"}>
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={saveRating} title={"Save edit"}>
                                         <Image src={saveIcon} width={20} height={20} alt={"Save"} />
                                     </button>
-                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => cancelRating()} title={"Cancel edit"}>
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={cancelRating} title={"Cancel edit"}>
                                         <Image src={cancelIcon} width={20} height={20} alt={"Cancel"} />
                                     </button>
                                 </div>
@@ -130,12 +160,12 @@ export default function Review({ review, clientId }) {
                     {
                         editingBody ?
                             <>
-                                <textarea className={"w-full border-[1px] focus:border-[1px] outline-0 rounded-xs h-[110px] resize-none p-1"} onChange={e => setEditedBody(e.target.value)} value={editedBody} />
+                                <textarea className={"w-full border-[1px] outline-0 rounded-xs h-[140px] resize-none p-1"} onChange={e => setEditedBody(e.target.value)} value={editedBody} />
                                 <div className={"flex flex-row justify-end gap-2"}>
-                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => saveBody()} title={"Save edit"}>
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={saveBody} title={"Save edit"}>
                                         <Image src={saveIcon} width={20} height={20} alt={"Save"} />
                                     </button>
-                                    <button className={"bg-gray-200 cursor-pointer"} onClick={() => cancelBody()} title={"Cancel edit"}>
+                                    <button className={"bg-gray-200 cursor-pointer"} onClick={cancelBody} title={"Cancel edit"}>
                                         <Image src={cancelIcon} width={20} height={20} alt={"Cancel"} />
                                     </button>
                                 </div>
