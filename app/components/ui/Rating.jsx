@@ -17,7 +17,7 @@ export default function Rating({ value, align }) {
         <div className={"w-fit flex flex-row gap-2 items-center"}>
             {
                 align === "left" ? 
-                    <span className={"w-[40px] text-sm text-center"}>
+                    <span className={"w-fit text-sm text-center"}>
                         {
                             value ? `${value} / 5` : "(No rating)"
                         }
@@ -35,7 +35,7 @@ export default function Rating({ value, align }) {
             </div>
             {
                 align === "right" ? 
-                    <span className={"w-[40px] text-sm text-center"}>
+                    <span className={"w-fit text-sm text-center"}>
                         {
                             value ? `${value} / 5` : "(No rating)"
                         }

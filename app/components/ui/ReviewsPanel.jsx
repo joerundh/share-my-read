@@ -1,6 +1,6 @@
 import ReviewForm from "./ReviewForm";
 import Review from "./Review";
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import LoadingIcon from "./LoadingIcon";
@@ -61,7 +61,7 @@ export default function ReviewsPanel({ bookId, clientId }) {
     });
 
     // Fetch paginated reviews
-
+    
     const { data, isLoading, error, refetch, isRefetching, isRefetchError } = useQuery({
         queryKey: [ "book-reviews", bookId, page, perPage, sorting ],
         queryFn: async () => {
@@ -77,7 +77,26 @@ export default function ReviewsPanel({ bookId, clientId }) {
                 throw new Error(res.message);
             }
             const obj = await res.json();
-            return obj.results;
+            
+            const reviews = obj.results;
+
+            const userIds = reviews.map(obj => obj.userId);
+            const usersRes = await fetch("/api/users", {
+                method: "POST",
+                body: JSON.stringify({
+                    clientId: clientId,
+                    userIds: userIds
+                })
+            });
+            if (!usersRes.ok) {
+                return reviews;
+            }
+            const usersData = await usersRes.json()
+            
+            const users = usersData.users.map(user => { return { userId: user.id, user: user } });
+
+            reviews.forEach(review => { review.user = users.find(x => x.userId === review.userId).user; });
+            return reviews;
         },
         enabled: isSignedIn
     });

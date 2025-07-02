@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
+
+import Link from "next/link";
+
 import RatingBar from "./RatingBar";
 import Rating from "./Rating";
 import Image from "next/image";
+import LikeButton from "./LikeButton";
 
 import editIcon from "./assets/edit-icon.png";
 import saveIcon from "./assets/save-icon.png";
 import cancelIcon from "./assets/cancel-icon.png";
-import LikeButton from "./LikeButton";
+import profileImage from "./assets/profile-icon.png";
+
 
 export default function Review({ review, clientId }) {
     const [ header, setHeader ] = useState(review.header);
@@ -94,11 +98,28 @@ export default function Review({ review, clientId }) {
         setEditingRating(false);
     }
 
+    const userProfile = () => {
+        if (review.user) {
+            return (
+                <>
+                    <Image src={review.user.imageUrl || profileImage} width={120} height={120} alt={"Profile image"} className={"rounded-full"} />
+                    <Link href={`/user/${review.user.username}`} className={"text-black hover:text-underline"}>{review.user.firstName || review.user.username || "User"}</Link>
+                </>
+            )
+        }
+        return (
+            <>
+                <Image src={profileImage} alt="No profile image" />
+                <span>User</span>
+            </>
+        )
+    }
+
     return (
         <div className={"w-full p-2 flex flex-row gap-1 mx-auto"}>
-            <div className={"size-[180px] bg-gray-500"}>
+            <div className={"w-[120px] h-full flex flex-col gap-2 justify-center items-center"}>
                 {
-                    // Profile
+                    userProfile()
                 }
             </div>
             <div className={"w-[600px] p-3 flex flex-col justify-start items-stretch gap-2"}>
