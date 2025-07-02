@@ -14,7 +14,9 @@ export default async function Layout({ params, children }) {
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-            {children}
+            <div className={"flex flex-col justify-start gap-5"}>
+                {children}
+            </div>
         </HydrationBoundary>
     );
 }

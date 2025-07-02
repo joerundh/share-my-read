@@ -7,10 +7,7 @@ import LoadingIcon from "./LoadingIcon";
 import Paginator from "./Paginator";
 import PaginationSettings from "./PaginationSettings";
 
-export default function ReviewsPanel({ bookId, clientId }) {
-    // User
-    const { isLoaded, isSignedIn, user } = useUser();
-
+export default function ReviewsPanel({ bookId, clientId, isAdmin }) {
     // State variables
     const [ page, setPage ] = useState(0);
     const [ perPage, setPerPage ] = useState(5);
@@ -37,7 +34,7 @@ export default function ReviewsPanel({ bookId, clientId }) {
             const obj = await res.json();
             return obj.result;
         },
-        enabled: isSignedIn
+        enabled: !!clientId
     });
 
     // Number of reviews
@@ -57,7 +54,7 @@ export default function ReviewsPanel({ bookId, clientId }) {
             const obj = await res.json();
             return obj.count;
         },
-        enabled: isSignedIn
+        enabled: !!clientId
     });
 
     // Fetch paginated reviews
@@ -98,7 +95,7 @@ export default function ReviewsPanel({ bookId, clientId }) {
             reviews.forEach(review => { review.user = users.find(x => x.userId === review.userId).user; });
             return reviews;
         },
-        enabled: isSignedIn
+        enabled: !!clientId
     });
 
     //
@@ -123,18 +120,6 @@ export default function ReviewsPanel({ bookId, clientId }) {
         refetch();
     }
 
-    if (!isLoaded) {
-        return (
-            <LoadingIcon message={"Loading..."} />
-        )
-    }
-
-    if (!isSignedIn) {
-        return (
-            <p className={"w-full text-center"}>Log in to read reviews.</p>
-        )
-    }
-
     const pageCount = Math.ceil(count/perPage);
 
     const reviewForm = () => {
@@ -157,7 +142,7 @@ export default function ReviewsPanel({ bookId, clientId }) {
             );
         }
         return data.map((review, index) => (
-            <Review key={index} review={review} clientId={clientId} />
+            <Review key={index} review={review} clientId={clientId} isAdmin={isAdmin} refetcher={refetch} />
         ))
     }
 

@@ -11,9 +11,10 @@ import editIcon from "./assets/edit-icon.png";
 import saveIcon from "./assets/save-icon.png";
 import cancelIcon from "./assets/cancel-icon.png";
 import profileImage from "./assets/profile-icon.png";
+import deleteIcon from "./assets/delete-icon.png";
 
 
-export default function Review({ review, clientId }) {
+export default function Review({ review, clientId, isAdmin, refetcher }) {
     const [ header, setHeader ] = useState(review.header);
     const [ body, setBody ] = useState(review.body);
     const [ rating, setRating ] = useState(review.rating);
@@ -103,7 +104,7 @@ export default function Review({ review, clientId }) {
             return (
                 <>
                     <Image src={review.user.imageUrl || profileImage} width={120} height={120} alt={"Profile image"} className={"rounded-full"} />
-                    <Link href={`/user/${review.user.username}`} className={"text-black hover:text-underline"}>{review.user.firstName || review.user.username || "User"}</Link>
+                    <span className={"text-black font-bold"}>{review.user.firstName || review.user.username || "User"}</span>
                 </>
             )
         }
@@ -113,6 +114,24 @@ export default function Review({ review, clientId }) {
                 <span>User</span>
             </>
         )
+    }
+
+    const deleteReview = async () => {
+        if (confirm("Do you really want to delete this review?")) {
+            const res = await fetch(`/api/reviews/delete`, {
+                method: "POST",
+                body: JSON.stringify({
+                    clientId: clientId,
+                    reviewId: review["_id"]
+                })
+            });
+            if (!res.ok) {
+                alert("An error occurred, the review could not be deleted.")
+                return;
+            }
+            refetcher();
+            alert("The review was successfully deleted.");
+        }
     }
 
     return (
@@ -127,7 +146,10 @@ export default function Review({ review, clientId }) {
                     {
                         editingHeader ?
                             <>
-                                <input type="text" value={editedHeader} onChange={e => setEditedHeader(e.target.value)} className={"w-[400px] border-1 rounded-xs p-1"} />,
+                                <div className={"w-fit flex flex-row items-center gap-2"}>
+                                    <input type="text" maxLength={80} value={editedHeader} onChange={e => setEditedHeader(e.target.value)} className={"w-[400px] border-1 rounded-xs p-1"} />
+                                    <span className={"text-sm"}>{editedHeader.length} / 80</span>
+                                </div>
                                 <div className={"flex flex-row gap-2"}>
                                     <button className={"bg-gray-200 cursor-pointer"} onClick={saveHeader} title={"Save edit"}>
                                         <Image src={saveIcon} width={20} height={20} alt={"Save"} />
@@ -181,7 +203,10 @@ export default function Review({ review, clientId }) {
                     {
                         editingBody ?
                             <>
-                                <textarea className={"w-full border-[1px] outline-0 rounded-xs h-[140px] resize-none p-1"} onChange={e => setEditedBody(e.target.value)} value={editedBody} />
+                                <div className={"w-full flex flex-col items-end gap-2"}>
+                                    <textarea className={"w-full border-[1px] outline-0 rounded-xs h-fit resize-none p-1"} maxLength={600} onChange={e => setEditedBody(e.target.value)} value={editedBody} />
+                                    <span className={"text-sm"}>{editedBody.length}/600</span>
+                                </div>
                                 <div className={"flex flex-row justify-end gap-2"}>
                                     <button className={"bg-gray-200 cursor-pointer"} onClick={saveBody} title={"Save edit"}>
                                         <Image src={saveIcon} width={20} height={20} alt={"Save"} />
@@ -210,6 +235,16 @@ export default function Review({ review, clientId }) {
                             </>
                     }
                 </div>
+                {
+                    review.userId === clientId || isAdmin ? 
+                        <div>
+                            <button className={"w-fit p-1 bg-gray-200 text-sm flex flex-row gap-1 items-center border-1 border-black"} onClick={deleteReview}>
+                                <Image width={15} height={15} src={deleteIcon} alt="Delete" />
+                                <span>Delete review</span>
+                            </button>
+                        </div>
+                    : <></>
+                }
             </div>
             <LikeButton review={review} clientId={clientId} />
         </div>
