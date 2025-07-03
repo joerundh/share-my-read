@@ -1,21 +1,18 @@
 "use client"
 import { useUser, SignedIn, SignedOut, SignUpButton, SignInButton, SignOutButton } from "@clerk/nextjs";
-import Link from "next/link";
 
 export default function LoginBar() {
-    const { userId } = useUser();
+    const { user } = useUser();
 
     return (
-        <div className={"flex flex-row justify-between align-center gap-5"}>
-            <SignedIn>
-                <Link href={`/user/${userId}`}><button className={"p-2"}>My profile</button></Link>
-                <SignOutButton />
+        <div className={"flex flex-row justify-between items-center"}>
+            <SignedIn className={"flex flex-row gap-5 items-center"}>
+                <p>Logged in as <b>{user?.firstName || user?.username}</b></p>
+                <SignOutButton className={"cursor-pointer"} title={"Sign out"} />
             </SignedIn>
-            <SignedOut>
-                <SignInButton>
-                    <button className={"cursor-pointer p-2"}>Sign in</button>
-                </SignInButton>
-                <SignUpButton></SignUpButton>
+            <SignedOut className={"flex flex-row gap-5 items-center"}>
+                <SignInButton className={""} title={""}></SignInButton>
+                <SignUpButton className={""} title={""}></SignUpButton>
             </SignedOut>
         </div>
     )
