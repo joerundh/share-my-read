@@ -37,7 +37,7 @@ export async function GET(request) {
             _id, userId, header, body, rating 
         }[${offset}...${offset + limit}]`;
         */
-        const query = `*[_type == "review" && bookId == "${req.bookId}"] | order(${[ "_createdAt desc", "_createdAt asc", "rating desc", "rating asc" ][sorting]}) {
+        const query = `*[_type == "review" && bookId == "${req.bookId}"] | order(${[ "_createdAt desc", "_createdAt asc", "rating desc", "rating asc", "count(likes) desc", "count(likes) asc" ][sorting]}) {
             _id,
             userId,
             header,

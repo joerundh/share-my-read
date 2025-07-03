@@ -16,6 +16,8 @@ export default function PaginationSettings({ perPageValue, perPageSetter, sortin
                     <option value={1}>Date added, ascending</option>
                     <option value={2}>Rating, descending</option>
                     <option value={3}>Rating, ascending</option>
+                    <option value={4}>Likes, descending</option>
+                    <option value={5}>Likes, ascending</option>
                 </select>
             </label>
         </div>
