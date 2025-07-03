@@ -7,7 +7,7 @@ import LoadingIcon from "./LoadingIcon";
 import Paginator from "./Paginator";
 import PaginationSettings from "./PaginationSettings";
 
-export default function ReviewsPanel({ bookId, clientId, isAdmin }) {
+export default function ReviewsPanel({ bookId, clientId, isAdmin, refetcher }) {
     // State variables
     const [ page, setPage ] = useState(0);
     const [ perPage, setPerPage ] = useState(5);
@@ -19,7 +19,7 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin }) {
 
     // Check whether the client user has written a review
 
-    const { data: found, isLoading: searchLoading, error: searchError, refetch: research } = useQuery({
+    const { data: found, isLoading: isSearching, error: searchError, refetch: research, isRefetching: isResearching, refetchError: researchError } = useQuery({
         queryKey: [ "book-reviews", "search", bookId, clientId ],
         queryFn: async () => {
             const params = new URLSearchParams([
@@ -39,11 +39,10 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin }) {
 
     // Number of reviews
 
-    const { data: count, isLoading: countLoading, error: countError } = useQuery({
+    const { data: count, isLoading: isCounting, error: countingError, refetch: recount, refetchIsLoading: isRecounting, refetchError: recountError } = useQuery({
         queryKey: [ "book-review", "count", bookId ],
         queryFn: async () => {
             const searchParams = new URLSearchParams([
-                [ "clientId", clientId ],
                 [ "bookId", bookId ]
             ]);
 
@@ -59,7 +58,7 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin }) {
 
     // Fetch paginated reviews
     
-    const { data, isLoading, error, refetch, isRefetching, isRefetchError } = useQuery({
+    const { data, isLoading, error, refetch, refetchIsLoading, refetchError} = useQuery({
         queryKey: [ "book-reviews", bookId, page, perPage, sorting ],
         queryFn: async () => {
             const searchParams = new URLSearchParams([
@@ -98,7 +97,12 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin }) {
         enabled: !!clientId
     });
 
-    //
+    const refetchAll = () => {
+        refetcher();
+        refetch();
+        recount();
+        research();
+    }
 
     async function submit(e, pender) {
         const formData = new FormData(e.target);
@@ -116,24 +120,31 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin }) {
             pender(false);
             return;
         }
-        research();
-        refetch();
+        refetchAll();
     }
 
     const pageCount = Math.ceil(count/perPage);
 
     const reviewForm = () => {
-        if (searchLoading || searchError || found) {
+        if (isSearching || searchError || found || isResearching) {
             return <></>
         }
         return <ReviewForm bookId={bookId} clientId={clientId} submitter={submit} />
     }
 
+    const reviewNumbers = () => {
+        const x = count ? page*perPage + 1 : 0;
+        const y = (page + 1)*perPage > count ? count : (page + 1)*perPage;
+        return (
+            <p className={"w-full"}>Showing {x} - {y} out of {count} reviews</p>
+        )
+    }
+
     const reviews = () => {
-        if (countLoading || isLoading || isRefetching) {
+        if (isCounting || isLoading || isRecounting) {
             return <LoadingIcon message={"Loading reviews..."} />
         }
-        if (countError || error || isRefetchError) {
+        if (countingError || error || recountError) {
             return <p className={"w-full text-center"}>An error occurred, try again later.</p>
         }
         if (!data?.length) {
@@ -142,7 +153,7 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin }) {
             );
         }
         return data.map((review, index) => (
-            <Review key={index} review={review} clientId={clientId} isAdmin={isAdmin} refetcher={refetch} />
+            <Review key={index} review={review} clientId={clientId} isAdmin={isAdmin} refetcher={refetchAll} />
         ))
     }
 
@@ -151,7 +162,10 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin }) {
             {
                 reviewForm()
             }
-            <div className={"flex flex-col justify-between items-center gap-5"}>
+            <div className={"flex flex-col justify-between items-center gap-3"}>
+                {
+                    reviewNumbers()
+                }
                 <PaginationSettings perPageValue={perPage} perPageSetter={setPerPage} sortingValue={sorting} sortingSetter={setSorting} />
                 {
                 reviews()

@@ -1,6 +1,6 @@
 export default function PaginationSettings({ perPageValue, perPageSetter, sortingValue, sortingSetter }) {
     return (
-        <div className={"w-full bg-gray-200 p-5 flex flex-row justify-between items-center rounded-sm"}>
+        <div className={"w-full bg-gray-200 p-3 flex flex-row justify-between items-center rounded-sm"}>
             <label className={"flex flex-row items-center gap-2"}>
                 <span>Results per page:</span>
                 <select value={perPageValue} onChange={e => perPageSetter(e.target.value)} className={"border-[1px] border-black rounded-xs bg-white"}>

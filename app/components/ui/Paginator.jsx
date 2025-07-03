@@ -24,7 +24,7 @@ export default function Paginator({ pageValue, pageSetter, perPageValue, pageCou
     }
 
     return (
-        <div className={"w-full p-2 flex flex-row justify-center items-center gap-3 bg-gray-200 rounded-sm"}>
+        <div className={"w-full flex flex-row justify-center items-center gap-3 bg-gray-200 rounded-sm"}>
             <button className={"cursor-pointer p-2 hover:border-bottom-1 hover:bg-gray-300"} onClick={() => firstPage()}>First</button>
             <button className={"cursor-pointer p-2 hover:border-bottom-1 hover:bg-gray-300"} onClick={() => prevPage()}>Prev</button>
             {

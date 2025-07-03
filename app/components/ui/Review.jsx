@@ -82,6 +82,25 @@ export default function Review({ review, clientId, isAdmin, refetcher }) {
             setEditedRating(rating);
         }
         setEditingRating(false);
+        refetcher();
+    }
+    
+    const deleteReview = async () => {
+        if (confirm("Do you really want to delete this review?")) {
+            const res = await fetch(`/api/reviews/delete`, {
+                method: "POST",
+                body: JSON.stringify({
+                    clientId: clientId,
+                    reviewId: review["_id"]
+                })
+            });
+            if (!res.ok) {
+                alert("An error occurred, the review could not be deleted.")
+                return;
+            }
+            refetcher();
+            alert("The review was successfully deleted.");
+        }
     }
 
     const cancelHeader = () => {
@@ -114,24 +133,6 @@ export default function Review({ review, clientId, isAdmin, refetcher }) {
                 <span>User</span>
             </>
         )
-    }
-
-    const deleteReview = async () => {
-        if (confirm("Do you really want to delete this review?")) {
-            const res = await fetch(`/api/reviews/delete`, {
-                method: "POST",
-                body: JSON.stringify({
-                    clientId: clientId,
-                    reviewId: review["_id"]
-                })
-            });
-            if (!res.ok) {
-                alert("An error occurred, the review could not be deleted.")
-                return;
-            }
-            refetcher();
-            alert("The review was successfully deleted.");
-        }
     }
 
     return (
@@ -237,7 +238,7 @@ export default function Review({ review, clientId, isAdmin, refetcher }) {
                 </div>
                 {
                     review.userId === clientId || isAdmin ? 
-                        <div>
+                        <div className={"w-full flex flex-row justify-end"}>
                             <button className={"w-fit p-1 bg-gray-200 text-sm flex flex-row gap-1 items-center border-1 border-black"} onClick={deleteReview}>
                                 <Image width={15} height={15} src={deleteIcon} alt="Delete" />
                                 <span>Delete review</span>

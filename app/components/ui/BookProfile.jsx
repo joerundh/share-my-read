@@ -2,30 +2,63 @@
 import Link from "next/link";
 import CoverPhoto from "@/app/components/ui/CoverPhoto";
 import InlineList from "@/app/components/ui/InlineList";
-import { useUser } from "@clerk/nextjs";
-import { useQuery } from "@tanstack/react-query";
-import ReviewsPanel from "./ReviewsPanel";
+import Rating from "./Rating";
+import SmallLoadingIcon from "./SmallLoadingIcon";
 
-export default function BookProfile({ bookObject }) {
-    const { user, isSignedIn, isLoaded } = useUser();
+export default function BookProfile({ bookObject, count, rating }) {
+    const { countValue, countIsLoading, countError } = count;
+    const { ratingData, ratingIsLoading, ratingError } = rating;
 
     return (
         <div className={"flex flex-col justify-start align-center gap-5"}>
             <div className={"flex flex-row align-start gap-5"}>
                 <CoverPhoto src={bookObject.formats["image/jpeg"]} />
-                <div className={"flex flex-col justify-start gap-3"}>
-                    <h2 className={"full text-xl font-bold"}>{bookObject.title}</h2>
+                <div className={"flex flex-col justify-start gap-5"}>
+                    <h2 className={"full text-2xl font-bold"}>{bookObject.title}</h2>
                     <div>
                         by <InlineList separator={", "}>
                             {
                                 bookObject.authors.map((author, index) => {
                                     const name = author.name.split(",").map(part => part.trim()).reverse().join(" ");
                                     return (
-                                        <Link key={index} href={`/search?${new URLSearchParams([[ "q", name ]]).toString()}`} title="Search for author" style={{ textWrap: "nowrap" }}>{name}</Link>
+                                        <Link key={index} href={`/search?${new URLSearchParams([[ "q", name ]]).toString()}`} title="Search for author" className={"font-bold hover:underline"}>{name}</Link>
                                     )
                                 })
                             }
                         </InlineList>
+                    </div>
+                    <div className={"flex flex-row justify-start gap-2"}>
+                            <span>Number of reviews:</span>
+                            {
+                                countIsLoading ? <SmallLoadingIcon /> :
+                                    countError ? 
+                                        <span>(Unavailable)</span>
+                                    :
+                                        <span className={"font-bold"}>{countValue}</span>
+                            }
+                    </div>
+                    <div className={"flex flex-row justify-start items-center gap-2"}>
+                            <span>Mean rating:</span>
+                            {
+                                ratingIsLoading ? <SmallLoadingIcon /> : 
+                                    ratingError ?
+                                        <span>(Unavailable)</span>
+                                    :
+                                        ratingData.count ?
+                                            (
+                                                <>
+                                                    <Rating value={ratingData.mean} />
+                                                    <span>based on {ratingData.count} reviews</span>
+                                                </>
+                                            )
+                                        :
+                                            (
+                                                <>
+                                                    <Rating value={0} />
+                                                    <span>No ratings yet</span>
+                                                </>
+                                            )
+                            }
                     </div>
                 </div>
             </div>

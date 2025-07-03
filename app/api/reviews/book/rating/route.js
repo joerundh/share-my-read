@@ -14,13 +14,23 @@ export async function GET(request) {
     }
 
     try {
-        const ratings = client.fetch(`*[_type == "review" && bookId == "${params.bookId}" && rating > 0]{ rating }`);
+        const data = await client.fetch(`*[_type == "review" && bookId == "${params.bookId}" && rating > 0]{ rating }`, { cache: "no-store" });
+
+        const ratings = data.map(obj => obj.rating);
+        const count = ratings.length;
+
+        const mean = count ? Math.round(ratings.reduce((acc, cur) => acc + cur, 0)/count) : 0;
+
         return Response.json({
-            mean: ratings.reduce((acc, cur) => acc + cur, 0)/ratings.length,
-            count: ratings.length
+            message: "Success.",
+            rating: {
+                mean: mean,
+                count: count
+            }
         });
     }
     catch (e) {
         console.log(e.toString());
+        return Response.json({ message: "An error occurred." }, { status: 500 })
     }
 }
