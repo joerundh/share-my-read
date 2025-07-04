@@ -1,7 +1,6 @@
 import ReviewForm from "./ReviewForm";
 import Review from "./Review";
 import { useState, useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import LoadingIcon from "./LoadingIcon";
 import Paginator from "./Paginator";
@@ -81,17 +80,17 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin, refetcher }) {
                 method: "POST",
                 body: JSON.stringify({
                     clientId: clientId,
-                    userId: userId
+                    userId: userIds
                 })
             });
             if (!usersRes.ok) {
                 return reviews;
             }
-            const usersData = await usersRes.json()
+            const data = await usersRes.json();
             
-            const users = usersData.users.map(user => { return { userId: user.id, user: user } });
+            const users = data.users;
 
-            reviews.forEach(review => { review.user = users.find(x => x.userId === review.userId).user; });
+            reviews.forEach(review => { review.user = users.find(x => x.id === review.userId); });
             return reviews;
         },
         enabled: !!clientId
@@ -145,6 +144,7 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin, refetcher }) {
             return <LoadingIcon message={"Loading reviews..."} />
         }
         if (countingError || error || recountError) {
+            console.log(error)
             return <p className={"w-full text-center"}>An error occurred, try again later.</p>
         }
         if (!data?.length) {

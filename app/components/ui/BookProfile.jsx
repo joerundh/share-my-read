@@ -2,7 +2,7 @@
 import Link from "next/link";
 import CoverPhoto from "@/app/components/ui/CoverPhoto";
 import InlineList from "@/app/components/ui/InlineList";
-import Rating from "./RatingDisplay";
+import RatingDisplay from "./RatingDisplay";
 import SmallLoadingIcon from "./SmallLoadingIcon";
 
 export default function BookProfile({ bookObject, count, rating }) {
@@ -47,14 +47,14 @@ export default function BookProfile({ bookObject, count, rating }) {
                                         ratingData.count ?
                                             (
                                                 <>
-                                                    <Rating value={ratingData.mean} />
+                                                    <RatingDisplay value={ratingData.mean} />
                                                     <span>based on {ratingData.count} review{ratingData.count === 1 ? "" : "s"}</span>
                                                 </>
                                             )
                                         :
                                             (
                                                 <>
-                                                    <Rating value={0} />
+                                                    <RatingDisplay value={0} />
                                                     <span>No ratings yet</span>
                                                 </>
                                             )
