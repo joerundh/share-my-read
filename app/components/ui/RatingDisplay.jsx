@@ -3,7 +3,7 @@ import Image from "next/image";
 import starIcon from "./assets/star-icon.png";
 import emptyIcon from "./assets/star-empty-icon.png";
 
-export default function Rating({ value, align }) {
+export default function RatingDisplay({ value, align }) {
     const getIcon = x => {
         if (!value) {
             return emptyIcon;

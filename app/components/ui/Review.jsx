@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 import RatingBar from "./RatingBar";
-import Rating from "./Rating";
+import RatingDisplay from "./RatingDisplay";
 import Image from "next/image";
 import LikeButton from "./LikeButton";
 
@@ -189,7 +189,7 @@ export default function Review({ review, clientId, isAdmin, refetcher }) {
                             </>
                         :
                             <>
-                                <Rating value={rating} align={"right"}/>
+                                <RatingDisplay value={rating} align={"right"}/>
                                 {
                                     clientId === review.userId ? (
                                         <button className={"bg-gray-200 cursor-pointer"} onClick={() => setEditingRating(true)} title={"Edit rating"}>

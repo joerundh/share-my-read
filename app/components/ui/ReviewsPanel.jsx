@@ -81,7 +81,7 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin, refetcher }) {
                 method: "POST",
                 body: JSON.stringify({
                     clientId: clientId,
-                    userIds: userIds
+                    userId: userId
                 })
             });
             if (!usersRes.ok) {
@@ -168,7 +168,7 @@ export default function ReviewsPanel({ bookId, clientId, isAdmin, refetcher }) {
                 }
                 <PaginationSettings perPageValue={perPage} perPageSetter={setPerPage} sortingValue={sorting} sortingSetter={setSorting} />
                 {
-                reviews()
+                    reviews()
                 }
                 <Paginator pageValue={page} pageSetter={setPage} perPageValue={perPage} pageCount={pageCount} />
             </div>

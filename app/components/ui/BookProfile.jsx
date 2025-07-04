@@ -2,7 +2,7 @@
 import Link from "next/link";
 import CoverPhoto from "@/app/components/ui/CoverPhoto";
 import InlineList from "@/app/components/ui/InlineList";
-import Rating from "./Rating";
+import Rating from "./RatingDisplay";
 import SmallLoadingIcon from "./SmallLoadingIcon";
 
 export default function BookProfile({ bookObject, count, rating }) {
@@ -12,7 +12,7 @@ export default function BookProfile({ bookObject, count, rating }) {
     return (
         <div className={"flex flex-col justify-start align-center gap-5"}>
             <div className={"flex flex-row align-start gap-5"}>
-                <CoverPhoto src={bookObject.formats["image/jpeg"]} />
+                <CoverPhoto src={bookObject.formats["image/jpeg"]} width={200} height={300} />
                 <div className={"flex flex-col justify-start gap-5"}>
                     <h2 className={"full text-2xl font-bold"}>{bookObject.title}</h2>
                     <div>
@@ -48,7 +48,7 @@ export default function BookProfile({ bookObject, count, rating }) {
                                             (
                                                 <>
                                                     <Rating value={ratingData.mean} />
-                                                    <span>based on {ratingData.count} reviews</span>
+                                                    <span>based on {ratingData.count} review{ratingData.count === 1 ? "" : "s"}</span>
                                                 </>
                                             )
                                         :

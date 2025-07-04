@@ -16,14 +16,14 @@ export async function POST(request) {
         return Response.json({ message: "Access denied." }, { status: 401 });
     }
 
-    if (!req.userIds) {
+    if (!req.userId) {
         return Response.json({ message: "Missing references" }, { status: 400 });
     }
 
     try {
         const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
-        const users = await clerkClient.users.getUserList({ userId: req.userIds });
+        const users = await clerkClient.users.getUserList({ userId: req.userId });
         const data = users.data.map(user => {
             return {
                 id: user.id,
