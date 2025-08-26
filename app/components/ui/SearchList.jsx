@@ -47,9 +47,12 @@ export default function SearchList({ books }) {
             </div>
             <div className={"p-2 flex flex-col items-stretch gap-2"}>
                 {
-                    books
-                        .filter((x, index) => index >= page*perPage && index < (page + 1)*perPage)
-                        .map((book, index) => <SearchListItem book={book} key={index}/>)
+                    books.length ? 
+                        books
+                            .filter((x, index) => index >= page*perPage && index < (page + 1)*perPage)
+                            .map((book, index) => <SearchListItem book={book} key={index}/>)
+                    :
+                        <p>No results found.</p>
                 }
             </div>
             <div className={"w-full flex flex-row justify-center items-center gap-3 bg-gray-200"}>
